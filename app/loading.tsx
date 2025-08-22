@@ -1,36 +1,38 @@
-'use client';
-
-import { motion, Easing } from 'framer-motion';
+import { motion, type Transition } from 'framer-motion';
 import css from './loading.module.css';
 
 export default function Loading() {
-  const dotAnimation = {
-    opacity: [0.3, 1, 0.3],
-  };
+  const dotAnimation = { opacity: [0.3, 1, 0.3] };
 
-  const ease: Easing = [0.42, 0, 0.58, 1];
-  const transition = {
+  const ease: [number, number, number, number] = [0.42, 0, 0.58, 1];
+
+  const transitionBase: Transition = {
     repeat: Infinity,
     duration: 0.8,
-    ease: ease,
+    ease,
   };
 
   return (
-    <div className={css.wrapper}>
+    <div
+      className={css.wrapper}
+      role="status"
+      aria-live="polite"
+      aria-label="Loading…"
+    >
       <motion.div
         className={css.dot}
         animate={dotAnimation}
-        transition={{ ...transition, delay: 0 }}
+        transition={{ ...transitionBase, delay: 0 }}
       />
       <motion.div
         className={css.dot}
         animate={dotAnimation}
-        transition={{ ...transition, delay: 0.2 }}
+        transition={{ ...transitionBase, delay: 0.2 }}
       />
       <motion.div
         className={css.dot}
         animate={dotAnimation}
-        transition={{ ...transition, delay: 0.4 }}
+        transition={{ ...transitionBase, delay: 0.4 }}
       />
     </div>
   );

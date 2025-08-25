@@ -1,3 +1,4 @@
+'use client';
 import { motion, type Transition } from 'framer-motion';
 import css from './loading.module.css';
 

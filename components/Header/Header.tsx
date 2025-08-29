@@ -1,8 +1,12 @@
 import Link from 'next/link';
 import css from './Header.module.css';
 import { Routes } from '@/path/routes';
+import TagsMenu from '../TagsMenu/TagsMenu';
+import { getCategories } from '@/lib/api';
 
-const Header = () => {
+const Header = async () => {
+  const categories = getCategories;
+
   return (
     <header className={css.header}>
       <Link href={Routes.Home} aria-label="Home">
@@ -14,7 +18,7 @@ const Header = () => {
             <Link href={Routes.Home}>Home</Link>
           </li>
           <li>
-            <Link href={Routes.Notes}>Notes</Link>
+            <TagsMenu categories={categories} />
           </li>
         </ul>
       </nav>

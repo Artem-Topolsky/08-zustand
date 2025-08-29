@@ -1,6 +1,5 @@
-'use client';
-
 import css from './Footer.module.css';
+import Link from 'next/link';
 
 const Footer = () => {
   return (
@@ -8,15 +7,10 @@ const Footer = () => {
       <div className={css.content}>
         <p>© {new Date().getFullYear()} NoteHub. All rights reserved.</p>
         <div className={css.wrap}>
-          <p>
-            Developer:
-            <a href="https://github.com/codingweb123" target="_blank">
-              codingweb123
-            </a>
-          </p>
+          <p>Developer: your name</p>
           <p>
             Contact us:
-            <a href="mailto:student@notehub.app">student@notehub.app</a>
+            <Link href="mailto:student@notehub.app">student@notehub.app</Link>
           </p>
         </div>
       </div>

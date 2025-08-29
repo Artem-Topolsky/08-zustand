@@ -8,12 +8,16 @@ import Modal from '@/components/Modal/Modal';
 import Pagination from '@/components/Pagination/Pagination';
 import SearchBox from '@/components/SearchBox/SearchBox';
 import NoteForm from '@/components/NoteForm/NoteForm';
-import { fetchNotes } from '@/lib/api';
+import { fetchNotes, Tags } from '@/lib/api';
 import Loading from '@/app/loading';
 import { Toaster } from 'react-hot-toast';
-import css from './NotesPage.module.css';
+import css from './NotesClient.module.css';
 
-const NotesClient = () => {
+interface NotesClientProps {
+  categories: Tags;
+}
+
+const NotesClient = ({ categories }: NotesClientProps) => {
   const [query, setQuery] = useState<string>('');
   const [debouncedQuery] = useDebounce(query, 300);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
@@ -76,9 +80,9 @@ const NotesClient = () => {
         isSuccess &&
         notes && (
           <NoteList
+            notes={notes.notes}
             query={debouncedQuery}
             page={page}
-            notes={notes.notes}
             isFetching={isFetching}
           />
         )
@@ -87,8 +91,7 @@ const NotesClient = () => {
       {isModalOpen && (
         <Modal onClose={handleClose}>
           <NoteForm
-            query={debouncedQuery}
-            page={page}
+            categories={categories}
             onSubmit={handleClose}
             onCancel={handleClose}
           />

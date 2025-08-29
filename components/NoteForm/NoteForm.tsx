@@ -4,36 +4,21 @@ import { Formik, Form, ErrorMessage, type FormikHelpers, Field } from 'formik';
 import css from './NoteForm.module.css';
 import * as Yup from 'yup';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { createNote } from '@/lib/api';
+import { createNote, Tags } from '@/lib/api';
 import { Loading } from 'notiflix';
 import toast from 'react-hot-toast';
 
 interface NoteFormProps {
-  query: string;
-  page: number;
+  categories: Tags;
   onSubmit: () => void;
   onCancel: () => void;
 }
 
-const formTags = ['Todo', 'Work', 'Personal', 'Meeting', 'Shopping'] as const;
-
-export interface InitialValues {
+interface InitialValues {
   title: string;
   content: string;
-  tag: (typeof formTags)[number];
+  tag: Tags[number];
 }
-
-const formScheme = Yup.object().shape({
-  title: Yup.string()
-    .min(3, 'Title must be at least 3 characters')
-    .max(50, 'Title must be less or equal to 50 characters')
-    .required('Title is required'),
-  content: Yup.string().max(
-    500,
-    'Content must be less or equal to 500 characters'
-  ),
-  tag: Yup.string().oneOf(formTags),
-});
 
 const initialValues: InitialValues = {
   title: '',
@@ -42,28 +27,41 @@ const initialValues: InitialValues = {
 };
 
 export default function NoteForm({
-  query,
-  page,
+  categories,
   onSubmit,
   onCancel,
 }: NoteFormProps) {
+  const formSchema = Yup.object().shape({
+    title: Yup.string()
+      .min(3, 'Title must be at least 3 characters')
+      .max(50, 'Title must be less or equal to 50 characters')
+      .required('Title is required'),
+    content: Yup.string().max(
+      500,
+      'Content must be less or equal to 500 characters'
+    ),
+    tag: Yup.string().oneOf(categories),
+  });
+
   const queryClient = useQueryClient();
+
   const noteCreation = useMutation({
     mutationFn: async ({ title, content, tag }: InitialValues) => {
       const data = await createNote(title, content, tag);
       return data;
     },
     onSuccess: () => {
-      onSubmit();
       Loading.remove();
       toast.success('Note has been successfully created!');
-      queryClient.invalidateQueries({ queryKey: ['notes', query, page] });
+      queryClient.invalidateQueries({ queryKey: ['notes'] });
+      onSubmit();
     },
     onError: () => {
       Loading.remove();
-      toast.error('Error occured while creating note!');
+      toast.error('Error occurred while creating note!');
     },
   });
+
   const onFormSubmit = (
     values: InitialValues,
     actions: FormikHelpers<InitialValues>
@@ -72,11 +70,12 @@ export default function NoteForm({
     noteCreation.mutate(values);
     actions.resetForm();
   };
+
   return (
     <Formik
       initialValues={initialValues}
       onSubmit={onFormSubmit}
-      validationSchema={formScheme}
+      validationSchema={formSchema}
     >
       <Form className={css.form}>
         <div className={css.formGroup}>
@@ -100,11 +99,13 @@ export default function NoteForm({
         <div className={css.formGroup}>
           <label htmlFor="tag">Tag</label>
           <Field as="select" name="tag" id="tag" className={css.select}>
-            {formTags.map((tag) => (
-              <option key={tag} value={tag}>
-                {tag}
-              </option>
-            ))}
+            {categories
+              .filter((tag) => tag !== 'All')
+              .map((tag) => (
+                <option key={tag} value={tag}>
+                  {tag}
+                </option>
+              ))}
           </Field>
           <ErrorMessage name="tag" component="span" className={css.error} />
         </div>

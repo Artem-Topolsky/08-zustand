@@ -31,8 +31,7 @@ export default function NoteForm({ categories }: NoteFormProps) {
       await createNote(draft.title, draft.content, draft.tag);
       toast.success('Note created successfully!');
       clearDraft();
-
-      queryClient.invalidateQueries({ queryKey: ['notes'], exact: false });
+      queryClient.invalidateQueries({ queryKey: ['notes'] });
 
       router.push('/notes/filter/All');
     } catch {

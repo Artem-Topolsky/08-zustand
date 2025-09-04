@@ -28,8 +28,9 @@ const NotesClient = ({ category }: NotesClientProps) => {
   } = useQuery({
     queryKey: ['notes', { search: debouncedQuery, page, category }],
     queryFn: () => fetchNotes(debouncedQuery, page, undefined, category),
-    refetchOnMount: false,
     placeholderData: keepPreviousData,
+    refetchOnMount: 'always',
+    refetchOnWindowFocus: true,
   });
 
   const totalPages = notes?.totalPages ?? 1;

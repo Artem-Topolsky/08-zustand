@@ -2,12 +2,12 @@
 
 import { Routes } from '@/path/routes';
 import css from './TagsMenu.module.css';
-import { Tags } from '@/lib/api';
+import { type Tag } from '@/lib/api';
 import Link from 'next/link';
 import { useState } from 'react';
 
 interface TagsMenuProps {
-  categories: Tags;
+  categories: readonly Tag[];
 }
 
 const TagsMenu = ({ categories }: TagsMenuProps) => {

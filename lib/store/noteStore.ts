@@ -1,11 +1,11 @@
 import { create } from "zustand"
 import { persist } from "zustand/middleware"
-import { Tags } from "../api"
+import { type Tag } from "../api"
 
 export interface NewNoteData {
-	title: string
-	content: string
-	tag: Tags[number]
+  title: string;
+  content: string;
+  tag: Tag;
 }
 
 interface NoteDraftStore {

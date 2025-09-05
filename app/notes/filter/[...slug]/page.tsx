@@ -3,18 +3,18 @@ import {
   HydrationBoundary,
   QueryClient,
 } from '@tanstack/react-query';
-import { fetchNotes, getCategories, Tags } from '@/lib/api';
+import { fetchNotes, getCategories, Tag } from '@/lib/api';
 import NotesClient from './Notes.client';
 import type { Metadata } from 'next';
 
 interface NotesFilterProps {
-  params: Promise<{ slug: Tags }>;
+  params: Promise<{ slug: Tag[] }>;
 }
 
 export const dynamicParams = false;
 export const revalidate = 900;
 
-const descriptions: Record<string, string> = {
+const descriptions: Record<Tag, string> = {
   All: 'All your notes in one place.',
   Work: 'Notes for your work projects.',
   Todo: 'Track your tasks and to-dos.',
@@ -51,14 +51,14 @@ export async function generateMetadata({
 }
 
 export const generateStaticParams = async () => {
-  const categories = getCategories;
+  const categories = getCategories();
   return categories.map((category) => ({ slug: [category] }));
 };
 
 export default async function NotesFilter({ params }: NotesFilterProps) {
   const queryClient = new QueryClient();
   const { slug } = await params;
-  const categories = getCategories;
+
   const category = slug[0] === 'All' ? undefined : slug[0];
 
   await queryClient.prefetchQuery({
@@ -68,7 +68,7 @@ export default async function NotesFilter({ params }: NotesFilterProps) {
 
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>
-      <NotesClient categories={categories} category={category} />
+      <NotesClient category={category} />
     </HydrationBoundary>
   );
 }

@@ -10,10 +10,7 @@ import Link from 'next/link';
 import { Routes } from '@/path/routes';
 
 interface NoteListProps {
-  query: string;
-  page: number;
   notes: Note[];
-  category?: string;
 }
 
 const containerVariants: Variants = {

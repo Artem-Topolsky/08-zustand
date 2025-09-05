@@ -3,13 +3,12 @@
 import css from './NoteForm.module.css';
 import { useRouter } from 'next/navigation';
 import { useNoteDraftStore } from '@/lib/store/noteStore';
-import { createNote, Tags } from '@/lib/api';
+import { createNote, Tag } from '@/lib/api';
 import toast from 'react-hot-toast';
 import { FormEvent } from 'react';
-import { useQueryClient } from '@tanstack/react-query';
-
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 interface NoteFormProps {
-  categories: Tags;
+  categories: readonly Tag[];
 }
 
 export default function NoteForm({ categories }: NoteFormProps) {
@@ -25,18 +24,23 @@ export default function NoteForm({ categories }: NoteFormProps) {
     setDraft({ ...draft, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = async (e: FormEvent) => {
-    e.preventDefault();
-    try {
-      await createNote(draft.title, draft.content, draft.tag);
+  const mutation = useMutation({
+    mutationFn: (newNote: { title: string; content: string; tag: Tag }) =>
+      createNote(newNote.title, newNote.content, newNote.tag),
+    onSuccess: () => {
       toast.success('Note created successfully!');
       clearDraft();
       queryClient.invalidateQueries({ queryKey: ['notes'] });
-
       router.push('/notes/filter/All');
-    } catch {
+    },
+    onError: () => {
       toast.error('Error creating note.');
-    }
+    },
+  });
+
+  const handleSubmit = (e: FormEvent) => {
+    e.preventDefault();
+    mutation.mutate(draft);
   };
 
   const handleCancel = () => router.back();

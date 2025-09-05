@@ -3,7 +3,7 @@
 import NoteList from '@/components/NoteList/NoteList';
 import Pagination from '@/components/Pagination/Pagination';
 import SearchBox from '@/components/SearchBox/SearchBox';
-import { fetchNotes, Tags } from '@/lib/api';
+import { fetchNotes, Tag } from '@/lib/api';
 import { keepPreviousData, useQuery } from '@tanstack/react-query';
 import { useState } from 'react';
 import { Toaster } from 'react-hot-toast';
@@ -12,14 +12,14 @@ import css from './NotesClient.module.css';
 import Link from 'next/link';
 
 interface NotesClientProps {
-  categories: Tags;
-  category: Exclude<Tags[number], 'All'> | undefined;
+  category: Exclude<Tag, 'All'> | undefined;
 }
 
 const NotesClient = ({ category }: NotesClientProps) => {
   const [query, setQuery] = useState<string>('');
   const [debouncedQuery] = useDebounce(query, 300);
   const [page, setPage] = useState<number>(1);
+
   const {
     data: notes,
     isSuccess,
@@ -34,6 +34,7 @@ const NotesClient = ({ category }: NotesClientProps) => {
   });
 
   const totalPages = notes?.totalPages ?? 1;
+
   const onQueryChange = useDebouncedCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
       setPage(1);
@@ -58,9 +59,7 @@ const NotesClient = ({ category }: NotesClientProps) => {
           Create note +
         </Link>
       </header>
-      {isSuccess && notes && (
-        <NoteList notes={notes.notes} query={debouncedQuery} page={page} />
-      )}
+      {isSuccess && notes && <NoteList notes={notes.notes} />}
     </div>
   );
 };

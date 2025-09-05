@@ -7,7 +7,8 @@ axios.defaults.headers["Authorization"] =
 
 const Tags = ["All", "Todo", "Work", "Personal", "Meeting", "Shopping"] as const
 
-export type Tags = typeof Tags
+export type Tag = typeof Tags[number];
+export const getCategories = () => Tags; 
 
 type SortBy = "created" | "updated"
 
@@ -17,23 +18,23 @@ interface FetchNotes {
 }
 
 export const fetchNotes = async (
-	search: string,
-	page: number = 1,
-	perPage: number = 12,
-	tag?: Exclude<Tags[number], "All">,
-	sortBy?: SortBy
+  search: string,
+  page: number = 1,
+  perPage: number = 12,
+  tag?: Exclude<Tag, "All">,
+  sortBy?: SortBy
 ) => {
-	const { data } = await axios.get<FetchNotes>("notes", {
-		params: {
-			search,
-			page,
-			perPage,
-			tag,
-			sortBy,
-		},
-	})
-	return data
-}
+  const { data } = await axios.get<FetchNotes>("notes", {
+    params: {
+      search,
+      page,
+      perPage,
+      tag,
+      sortBy,
+    },
+  });
+  return data;
+};
 
 export const createNote = async (
 	title: string,
@@ -58,5 +59,5 @@ export const deleteNote = async (id: string) => {
 	return data
 }
 
-export const getCategories = Tags
+
 

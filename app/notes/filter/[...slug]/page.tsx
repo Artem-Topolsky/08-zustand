@@ -27,21 +27,21 @@ export async function generateMetadata({
   params,
 }: NotesFilterProps): Promise<Metadata> {
   const { slug } = await params;
-  const category = slug[0] || 'All';
+  const tag = slug[0] || 'All';
 
   return {
-    title: `NoteHub – ${category} Notes`,
-    description: descriptions[category] || 'Browse your notes in NoteHub.',
+    title: `NoteHub – ${tag} Notes`,
+    description: descriptions[tag] || 'Browse your notes in NoteHub.',
     openGraph: {
-      title: `NoteHub – ${category} Notes`,
-      description: descriptions[category] || 'Browse your notes in NoteHub.',
-      url: `https://08-zustand-puce-seven.vercel.app/notes/filter/${category}`,
+      title: `NoteHub – ${tag} Notes`,
+      description: descriptions[tag] || 'Browse your notes in NoteHub.',
+      url: `https://08-zustand-puce-seven.vercel.app/notes/filter/${tag}`,
       images: [
         {
           url: 'https://ac.goit.global/fullstack/react/notehub-og-meta.jpg',
           width: 1200,
           height: 630,
-          alt: `NoteHub – ${category} Notes`,
+          alt: `NoteHub – ${tag} Notes`,
         },
       ],
       type: 'website',
@@ -51,24 +51,24 @@ export async function generateMetadata({
 }
 
 export const generateStaticParams = async () => {
-  const categories = getCategories();
-  return categories.map((category) => ({ slug: [category] }));
+  const tags = getCategories();
+  return tags.map((tag) => ({ slug: [tag] }));
 };
 
 export default async function NotesFilter({ params }: NotesFilterProps) {
   const queryClient = new QueryClient();
   const { slug } = await params;
 
-  const category = slug[0] === 'All' ? undefined : slug[0];
+  const tag = slug[0] === 'All' ? undefined : slug[0];
 
   await queryClient.prefetchQuery({
-    queryKey: ['notes', { search: '', page: 1, category }],
-    queryFn: () => fetchNotes('', 1, undefined, category),
+    queryKey: ['notes', { search: '', page: 1, tag }],
+    queryFn: () => fetchNotes('', 1, 12, tag),
   });
 
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>
-      <NotesClient category={category} />
+      <NotesClient tag={tag} />
     </HydrationBoundary>
   );
 }
